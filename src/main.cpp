@@ -53,7 +53,7 @@ void printData(uint8_t* arr, std::size_t bytes) {
     std::cout << '\n';
 }
 
-int countOnes(std::string_view compare_to, std::string_view hash) {
+int countDiffBits(std::string_view compare_to, std::string_view hash) {
     std::string xored = xorStrings(compare_to, hash);
     std::string binary_xored = strtb(xored);
     return std::count(binary_xored.begin(), binary_xored.end(), '1');
@@ -70,7 +70,7 @@ int main() {
     for (const auto& arr : generateData<bytes>(hashes)) {
         // std::cout << sha256(arr, bytes) << '\n';
         // printData(arr, bytes);
-        count += countOnes(sha256(parent, bytes), sha256(arr, bytes));
+        count += countDiffBits(sha256(parent, bytes), sha256(arr, bytes));
     }
 
     std::cout << "average hamming weight is: " << count / (float)((hashes - 1) * 256) << '\n';
