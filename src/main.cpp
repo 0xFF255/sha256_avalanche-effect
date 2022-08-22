@@ -57,16 +57,18 @@ int main() {
     /*number of hashes (parent hash included)*/
     static constexpr int number_of_hashes = 50;
     /*size(in bits) of data to feed into the sha256*/
-    static constexpr int bit_count = 96;
+    static constexpr int bit_count = 56;
 
     /*data can't have more bits than the count of hashes, we will run out of space*/
     /*data needs to be divisible by 8 to work correctly, sha256 works with chunks of 1 bytes*/
-    static_assert(bit_count >= number_of_hashes || bit_count % 8 != 0);
+    static_assert(bit_count >= number_of_hashes);
+    static_assert(bit_count % 8 == 0);
 
     uint8_t* parent = new uint8_t[bit_count / 8];
     memset(parent, 0, bit_count / 8);
 
     uint8_t** data = generateData(bit_count, number_of_hashes);
+    // printData(data, bit_count, number_of_hashes);
 
     std::string compare_to = sha256(parent, bit_count);
     std::string xored;
