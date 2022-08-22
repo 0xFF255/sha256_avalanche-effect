@@ -50,6 +50,7 @@ void printData(uint8_t* arr, std::size_t bytes) {
     for (std::size_t i = 0; i < bytes; i++) {
         std::cout << std::bitset<8>{arr[i]};
     }
+    std::cout << '\n';
 }
 
 int countOnes(std::string_view compare_to, std::string_view hash) {
@@ -67,7 +68,7 @@ int main() {
 
     std::size_t count = 0;
     for (const auto& arr : generateData<bytes>(hashes)) {
-        // std::cout << sha256(arr, bytes) << std::endl;
+        // std::cout << sha256(arr, bytes) << '\n';
         // printData(arr, bytes);
         count += countOnes(sha256(parent, bytes), sha256(arr, bytes));
     }
