@@ -10,11 +10,11 @@
 #include "string_functions.hpp"
 
 /* sha256 function */
-std::string sha256(uint8_t* data, int bit_count) {
+std::string sha256(uint8_t* data, int bytes) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, data, bit_count / 8);
+    SHA256_Update(&sha256, data, bytes);
     SHA256_Final(hash, &sha256);
     std::stringstream ss;
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
@@ -23,65 +23,61 @@ std::string sha256(uint8_t* data, int bit_count) {
     return ss.str();
 }
 
-uint8_t** generateData(int bit_count, int size) {
-    uint8_t** data = new uint8_t*[size];
-    for (int i = 0; i < size; i++) {
-        data[i] = new uint8_t[bit_count / 8];
-        memset(data[i], 0, bit_count / 8);
+template <size_t Bytes>
+std::vector<uint8_t*> generateData(std::size_t size) {
+    if (size > 8 * Bytes) {
+        throw std::invalid_argument("Cannot have a size larger than the number of bits.");
     }
 
-    int index = 0;
-    int lshift = 0;
+    std::vector<uint8_t*> data;
 
-    for (int i = 0; i < size; i++) {
-        data[i][index] = 1;
-        data[i][index] = (data[i][index] << lshift);
-        if (++index % (bit_count / 8) == 0) {
-            index = 0;
-            lshift++;
-        }
+    for (std::size_t i = 0; i < size; i++) {
+        data.push_back(new uint8_t[Bytes]);
+        memset(data[i], 0, Bytes);
     }
+
+    for (std::size_t i = 0; i < size; i++) {
+        const std::size_t byte_index = i / 8;
+        const std::size_t bit_index = i % 8;
+
+        data[i][byte_index] = (1 << bit_index);
+    }
+
     return data;
 }
 
-void printData(uint8_t** data, int bit_count, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < bit_count / 8; j++) {
-            std::cout << std::bitset<8>(data[i][j]);
+void printData(std::vector<uint8_t*> data, int bytes) {
+    for (const auto& arr : data) {
+        for (int j = 0; j < bytes; j++) {
+            std::cout << std::bitset<8>{arr[j]};
         }
         std::cout << std::endl;
     }
 }
 
 int main() {
-    /*number of hashes (parent hash included)*/
-    static constexpr int number_of_hashes = 50;
-    /*size(in bits) of data to feed into the sha256*/
-    static constexpr int bit_count = 56;
+    static constexpr int hashes = 8;
+    static constexpr int bytes = 2;
 
-    /*data can't have more bits than the count of hashes, we will run out of space*/
-    /*data needs to be divisible by 8 to work correctly, sha256 works with chunks of 1 bytes*/
-    static_assert(bit_count >= number_of_hashes);
-    static_assert(bit_count % 8 == 0);
+    std::vector<uint8_t*> data = generateData<bytes>(hashes);
 
-    uint8_t* parent = new uint8_t[bit_count / 8];
-    memset(parent, 0, bit_count / 8);
+    printData(data, bytes);
 
-    uint8_t** data = generateData(bit_count, number_of_hashes);
-    // printData(data, bit_count, number_of_hashes);
+    uint8_t* parent = new uint8_t[bytes];
+    memset(parent, 0, bytes);
 
-    std::string compare_to = sha256(parent, bit_count);
+    std::string compare_to = sha256(parent, bytes);
     std::string xored;
     std::string bin_xored;
 
     int K = 0;
-    for (int i = 0; i < number_of_hashes; i++) {
-        xored = strXor(compare_to, sha256(data[i], bit_count));
-        // std::cout << sha256(data[i], bit_count) << std::endl;
+    for (int i = 0; i < hashes; i++) {
+        xored = strXor(compare_to, sha256(data[i], bytes));
+        std::cout << sha256(data[i], bytes) << std::endl;
         bin_xored = convert(xored);
         K += std::count(bin_xored.begin(), bin_xored.end(), '1');
     }
 
-    std::cout << "average hamming weight is: " << K / (float)((number_of_hashes - 1) * 256) << '\n';
+    std::cout << "average hamming weight is: " << K / (float)((hashes - 1) * 256) << '\n';
     return 0;
 }
