@@ -46,38 +46,32 @@ std::vector<uint8_t*> generateData(std::size_t size) {
     return data;
 }
 
-void printData(std::vector<uint8_t*>& data, std::size_t bytes) {
-    for (const auto& arr : data) {
-        for (std::size_t j = 0; j < bytes; j++) {
-            std::cout << std::bitset<8>{arr[j]};
-        }
-        std::cout << std::endl;
+void printData(uint8_t* arr, std::size_t bytes) {
+    for (std::size_t i = 0; i < bytes; i++) {
+        std::cout << std::bitset<8>{arr[i]};
     }
 }
 
+int countOnes(std::string_view compare_to, std::string_view hash) {
+    std::string xored = xorStrings(compare_to, hash);
+    std::string binary_xored = strtb(xored);
+    return std::count(binary_xored.begin(), binary_xored.end(), '1');
+}
+
 int main() {
-    const std::size_t hashes = 49;
-    const std::size_t bytes = 7;
-
-    std::vector<uint8_t*> data = generateData<bytes>(hashes);
-
-    printData(data, bytes);
+    const std::size_t hashes = 60;
+    const std::size_t bytes = 8;
 
     uint8_t* parent = new uint8_t[bytes];
     memset(parent, 0, bytes);
 
-    std::string compare_to = sha256(parent, bytes);
-    std::string xored;
-    std::string bin_xored;
-
-    std::size_t K = 0;
-    for (std::size_t i = 0; i < hashes; i++) {
-        xored = strXor(compare_to, sha256(data[i], bytes));
-        std::cout << sha256(data[i], bytes) << std::endl;
-        bin_xored = convert(xored);
-        K += std::count(bin_xored.begin(), bin_xored.end(), '1');
+    std::size_t count = 0;
+    for (const auto& arr : generateData<bytes>(hashes)) {
+        // std::cout << sha256(arr, bytes) << std::endl;
+        // printData(arr, bytes);
+        count += countOnes(sha256(parent, bytes), sha256(arr, bytes));
     }
 
-    std::cout << "average hamming weight is: " << K / (float)((hashes - 1) * 256) << '\n';
+    std::cout << "average hamming weight is: " << count / (float)((hashes - 1) * 256) << '\n';
     return 0;
 }

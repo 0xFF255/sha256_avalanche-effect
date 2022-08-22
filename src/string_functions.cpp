@@ -2,7 +2,7 @@
 #include <sstream>
 
 /*hex string to binary string stream*/
-std::string convert(const std::string& hexa) {
+std::string strtb(const std::string_view hexa) {
     size_t i = 0;
     std::stringstream ss;
     while (hexa[i]) {
@@ -84,7 +84,7 @@ inline unsigned int value(char c) {
 }
 
 /*function to xor hex strings*/
-std::string strXor(const std::string& s1, const std::string& s2) {
+std::string xorStrings(std::string_view s1, std::string_view s2) {
     const char alphabet[] = "0123456789abcdef";
 
     std::string result;
