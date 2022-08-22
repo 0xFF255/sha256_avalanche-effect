@@ -11,8 +11,8 @@ add_executable(avalance)
 target_sources(avalance
 	PUBLIC include/string_functions.hpp
 
-	src/main.cpp
-	src/string_functions.cpp
+			src/main.cpp
+			src/string_functions.cpp
 )
 
 target_compile_options(avalance PRIVATE -Wall -Wextra -Wpedantic)
