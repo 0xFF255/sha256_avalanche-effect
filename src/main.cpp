@@ -23,7 +23,7 @@ std::string sha256(uint8_t* data, int bytes) {
     return ss.str();
 }
 
-template <size_t Bytes>
+template <std::size_t Bytes>
 std::vector<uint8_t*> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
         throw std::invalid_argument("Cannot have a size larger than the number of bits.");
@@ -46,9 +46,9 @@ std::vector<uint8_t*> generateData(std::size_t size) {
     return data;
 }
 
-void printData(std::vector<uint8_t*> data, int bytes) {
+void printData(std::vector<uint8_t*>& data, std::size_t bytes) {
     for (const auto& arr : data) {
-        for (int j = 0; j < bytes; j++) {
+        for (std::size_t j = 0; j < bytes; j++) {
             std::cout << std::bitset<8>{arr[j]};
         }
         std::cout << std::endl;
@@ -56,8 +56,8 @@ void printData(std::vector<uint8_t*> data, int bytes) {
 }
 
 int main() {
-    static constexpr int hashes = 8;
-    static constexpr int bytes = 2;
+    const std::size_t hashes = 49;
+    const std::size_t bytes = 7;
 
     std::vector<uint8_t*> data = generateData<bytes>(hashes);
 
@@ -70,8 +70,8 @@ int main() {
     std::string xored;
     std::string bin_xored;
 
-    int K = 0;
-    for (int i = 0; i < hashes; i++) {
+    std::size_t K = 0;
+    for (std::size_t i = 0; i < hashes; i++) {
         xored = strXor(compare_to, sha256(data[i], bytes));
         std::cout << sha256(data[i], bytes) << std::endl;
         bin_xored = convert(xored);
