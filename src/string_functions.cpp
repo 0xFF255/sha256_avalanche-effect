@@ -62,7 +62,8 @@ std::string strtb(const std::string_view hexa) {
                 ss << "1111";
                 break;
             default:
-                std::cout << "\nlease enter valid hexadecimal digit " << hexa[i];
+                std::cout << "\nlease enter valid hexadecimal digit "
+                          << hexa[i];
         }
         i++;
     }
@@ -84,7 +85,7 @@ inline unsigned int value(char c) {
 }
 
 /*function to xor hex strings*/
-std::string xorStrings(std::string_view s1, std::string_view s2) {
+std::string strXor(std::string_view s1, std::string_view s2) {
     const char alphabet[] = "0123456789abcdef";
 
     std::string result;
