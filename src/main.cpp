@@ -23,7 +23,7 @@ std::string sha256(uint8_t* data, int bytes) {
     return ss.str();
 }
 
-/* generate a vector uint8_t*'s to feed into sha256 */
+/* generate a vector of uint8_t*'s to feed into sha256 */
 template<std::size_t Bytes>
 std::vector<uint8_t*> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
@@ -38,7 +38,7 @@ std::vector<uint8_t*> generateData(std::size_t size) {
         memset(data[i], 0, Bytes);
     }
 
-    /* all uint8_t* must be different from each other by 2 bits and 1 from the parent uint8_t* */
+    /* all uint8_t*'s must be different from each other by 2 bits and 1 from the parent uint8_t* */
     for (std::size_t i = 0; i < size; i++) {
         const std::size_t byte_index = i / 8;
         const std::size_t bit_index = i % 8;
