@@ -12,7 +12,7 @@
 
 /* OpenSSL sha256 function */
 template<std::size_t Size>
-std::string sha256(std::array<uint8_t, Size> arr) {
+std::string sha256(const std::array<uint8_t, Size>& arr) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
@@ -65,7 +65,7 @@ int main() {
     /* number of hashes to compare to parent hash */
     const std::size_t hashes_count = 60;
     /* number of bytes that each hash will be constructed from */
-    const std::size_t bytes = 10;
+    const std::size_t bytes = 8;
 
     /* parent uint8_t array to compare our data with */
     std::array<uint8_t, bytes> parent{};
