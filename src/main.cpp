@@ -25,8 +25,7 @@ std::string sha256(uint8_t *data, int bytes) {
 template <std::size_t Bytes>
 std::vector<uint8_t *> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
-        throw std::invalid_argument(
-            "Cannot have a size larger than the number of bits.");
+        throw std::invalid_argument("Cannot have a size larger than the number of bits.");
     }
 
     std::vector<uint8_t *> data;
