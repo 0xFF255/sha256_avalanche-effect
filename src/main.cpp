@@ -77,6 +77,7 @@ int main() {
     /* sum the number of different bits from all hashes */
     std::size_t count = 0;
     for (const auto& arr: generateData<bytes>(hashes_count)) {
+        //printBits(arr, bytes);
         count += countDiffBits(sha256(parent, bytes), sha256(arr, bytes));
     }
 
