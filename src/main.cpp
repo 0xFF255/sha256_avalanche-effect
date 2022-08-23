@@ -1,6 +1,7 @@
 #include <openssl/sha.h>
 
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cstring>
 #include <iomanip>
@@ -10,11 +11,12 @@
 #include "string_functions.hpp"
 
 /* OpenSSL sha256 function */
-std::string sha256(uint8_t* data, int bytes) {
+template<std::size_t Size>
+std::string sha256(std::array<uint8_t, Size> arr) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, data, bytes);
+    SHA256_Update(&sha256, arr.data(), Size);
     SHA256_Final(hash, &sha256);
     std::stringstream ss;
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
@@ -23,22 +25,16 @@ std::string sha256(uint8_t* data, int bytes) {
     return ss.str();
 }
 
-/* generate a vector of uint8_t*'s to feed into sha256 */
+/* generate a vector of arrays of uint8_t's to feed into sha256 */
 template<std::size_t Bytes>
-std::vector<uint8_t*> generateData(std::size_t size) {
+std::vector<std::array<uint8_t, Bytes>> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
         throw std::invalid_argument("Cannot have a size larger than the number of bits.");
     }
 
-    std::vector<uint8_t*> data;
-    data.reserve(size);
+    std::vector<std::array<uint8_t, Bytes>> data(size);
 
-    for (std::size_t i = 0; i < size; i++) {
-        data.push_back(new uint8_t[Bytes]);
-        memset(data[i], 0, Bytes);
-    }
-
-    /* all uint8_t*'s must be different from each other by 2 bits and 1 from the parent uint8_t* */
+    /* all uint8_t arrays must be different from each other by 2 bits and 1 from the parent uint8_t array */
     for (std::size_t i = 0; i < size; i++) {
         const std::size_t byte_index = i / 8;
         const std::size_t bit_index = i % 8;
@@ -49,9 +45,10 @@ std::vector<uint8_t*> generateData(std::size_t size) {
     return data;
 }
 
-/* print the bits of each byte in a uint8_t* */
-void printBits(uint8_t* arr, std::size_t bytes) {
-    for (std::size_t i = 0; i < bytes; i++) {
+/* print the bits of each byte in a uint8_t array */
+template<std::size_t Size>
+void printBits(std::array<uint8_t, Size> arr) {
+    for (std::size_t i = 0; i < Size; i++) {
         std::cout << std::bitset<8>{arr[i]};
     }
     std::cout << '\n';
@@ -70,15 +67,14 @@ int main() {
     /* number of bytes that each hash will be constructed from */
     const std::size_t bytes = 10;
 
-    /* parent uint8_t* to compare our data with */
-    uint8_t* parent = new uint8_t[bytes];
-    memset(parent, 0, bytes); /* zeroed out */
+    /* parent uint8_t array to compare our data with */
+    std::array<uint8_t, bytes> parent{};
 
     /* sum the number of different bits from all hashes */
     std::size_t count = 0;
     for (const auto& arr: generateData<bytes>(hashes_count)) {
-        //printBits(arr, bytes);
-        count += countDiffBits(sha256(parent, bytes), sha256(arr, bytes));
+        // printBits(arr);
+        count += countDiffBits(sha256(parent), sha256(arr));
     }
 
     /* output the average hamming weight, which should be something around 0.5 */
