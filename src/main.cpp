@@ -72,6 +72,6 @@ int main() {
         count += countDiffBits(sha256(parent, bytes), sha256(arr, bytes));
     }
 
-    std::cout << "average hamming weight is: " << count / (float)((hashes_count - 1) * 256) << '\n';
+    std::cout << "average hamming weight is: " << count / (float)((hashes_count) * 256) << '\n';
     return 0;
 }
