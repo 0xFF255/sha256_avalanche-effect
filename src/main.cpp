@@ -9,6 +9,7 @@
 
 #include "string_functions.hpp"
 
+/* OpenSSL sha256 function */
 std::string sha256(uint8_t* data, int bytes) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
@@ -22,6 +23,7 @@ std::string sha256(uint8_t* data, int bytes) {
     return ss.str();
 }
 
+/* generate a vector uint8_t*'s to feed into sha256 */
 template<std::size_t Bytes>
 std::vector<uint8_t*> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
@@ -29,12 +31,14 @@ std::vector<uint8_t*> generateData(std::size_t size) {
     }
 
     std::vector<uint8_t*> data;
+    data.reserve(size);
 
     for (std::size_t i = 0; i < size; i++) {
         data.push_back(new uint8_t[Bytes]);
         memset(data[i], 0, Bytes);
     }
 
+    /* all uint8_t* must be different from each other by 2 bits and 1 from the parent uint8_t* */
     for (std::size_t i = 0; i < size; i++) {
         const std::size_t byte_index = i / 8;
         const std::size_t bit_index = i % 8;
@@ -45,6 +49,7 @@ std::vector<uint8_t*> generateData(std::size_t size) {
     return data;
 }
 
+/* print the bits of each byte in a uint8_t* */
 void printBits(uint8_t* arr, std::size_t bytes) {
     for (std::size_t i = 0; i < bytes; i++) {
         std::cout << std::bitset<8>{arr[i]};
@@ -52,6 +57,7 @@ void printBits(uint8_t* arr, std::size_t bytes) {
     std::cout << '\n';
 }
 
+/* count the different bits between two hexadecimal strings */
 int countDiffBits(std::string_view first_string, std::string_view second_string) {
     std::string xored = strXor(first_string, second_string);
     std::string binary_xored = strtb(xored);
@@ -59,21 +65,22 @@ int countDiffBits(std::string_view first_string, std::string_view second_string)
 }
 
 int main() {
+    /* number of hashes to compare to parent hash */
     const std::size_t hashes_count = 60;
-    const std::size_t bytes = 8;
+    /* number of bytes that each hash will be constructed from */
+    const std::size_t bytes = 10;
 
+    /* parent uint8_t* to compare our data with */
     uint8_t* parent = new uint8_t[bytes];
-    memset(parent, 0, bytes);
-    std::cout << strtb(sha256(parent, bytes));
+    memset(parent, 0, bytes); /* zeroed out */
 
+    /* sum the number of different bits from all hashes */
     std::size_t count = 0;
     for (const auto& arr: generateData<bytes>(hashes_count)) {
-        // std::cout << sha256(arr, bytes) << '\n';
-        // printBits(arr, bytes);
         count += countDiffBits(sha256(parent, bytes), sha256(arr, bytes));
     }
 
-
+    /* output the average hamming weight, which should be something around 0.5 */
     std::cout << "average hamming weight is: " << count / (float)((hashes_count)*256) << '\n';
     return 0;
 }

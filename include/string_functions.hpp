@@ -2,7 +2,7 @@
 #include <iostream>
 
 /*hex string to binary string stream*/
-std::string strtb(std::string_view hexa);
+std::string strtb(std::string_view hex);
 
 /*hex char to int*/
 inline unsigned int value(char c);

@@ -1,76 +1,40 @@
 #include <iostream>
 #include <sstream>
 
-/*hex string to binary string stream*/
-std::string strtb(const std::string_view hexa) {
-    size_t i = 0;
+std::string strtb(const std::string_view hex) {
+    std::size_t i = 0;
     std::stringstream ss;
-    while (hexa[i]) {
-        switch (hexa[i]) {
-            case '0':
-                ss << "0000";
-                break;
-            case '1':
-                ss << "0001";
-                break;
-            case '2':
-                ss << "0010";
-                break;
-            case '3':
-                ss << "0011";
-                break;
-            case '4':
-                ss << "0100";
-                break;
-            case '5':
-                ss << "0101";
-                break;
-            case '6':
-                ss << "0110";
-                break;
-            case '7':
-                ss << "0111";
-                break;
-            case '8':
-                ss << "1000";
-                break;
-            case '9':
-                ss << "1001";
-                break;
+    while (hex[i]) {
+        switch (hex[i]) {
+            case '0': ss << "0000"; break;
+            case '1': ss << "0001"; break;
+            case '2': ss << "0010"; break;
+            case '3': ss << "0011"; break;
+            case '4': ss << "0100"; break;
+            case '5': ss << "0101"; break;
+            case '6': ss << "0110"; break;
+            case '7': ss << "0111"; break;
+            case '8': ss << "1000"; break;
+            case '9': ss << "1001"; break;
             case 'A':
-            case 'a':
-                ss << "1010";
-                break;
+            case 'a': ss << "1010"; break;
             case 'B':
-            case 'b':
-                ss << "1011";
-                break;
+            case 'b': ss << "1011"; break;
             case 'C':
-            case 'c':
-                ss << "1100";
-                break;
+            case 'c': ss << "1100"; break;
             case 'D':
-            case 'd':
-                ss << "1101";
-                break;
+            case 'd': ss << "1101"; break;
             case 'E':
-            case 'e':
-                ss << "1110";
-                break;
+            case 'e': ss << "1110"; break;
             case 'F':
-            case 'f':
-                ss << "1111";
-                break;
-            default:
-                std::cout << "\nlease enter valid hexadecimal digit "
-                          << hexa[i];
+            case 'f': ss << "1111"; break;
+            default: std::cout << "\nlease enter valid hexadecimal digit " << hex[i];
         }
         i++;
     }
     return ss.str();
 }
 
-/*hex char to int*/
 inline unsigned int value(char c) {
     if (c >= '0' && c <= '9') {
         return c - '0';
@@ -84,7 +48,6 @@ inline unsigned int value(char c) {
     return -1;
 }
 
-/*function to xor hex strings*/
 std::string strXor(std::string_view s1, std::string_view s2) {
     const char alphabet[] = "0123456789abcdef";
 
