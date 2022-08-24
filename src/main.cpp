@@ -65,13 +65,13 @@ int main() {
     /* number of hashes to compare to parent hash */
     const std::size_t hashes_count = 60;
     /* number of bytes that each hash will be constructed from */
-    const std::size_t bytes = 8;
+    const std::size_t bytes = 10;
 
     /* parent uint8_t array to compare our data with */
     std::array<uint8_t, bytes> parent{};
 
     /* sum the number of different bits from all hashes */
-    std::size_t count = 0;
+    int count = 0;
     for (const auto& arr: generateData<bytes>(hashes_count)) {
         // printBits(arr);
         count += countDiffBits(sha256(parent), sha256(arr));
