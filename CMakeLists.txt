@@ -15,7 +15,7 @@ target_sources(avalanche
 			src/string_functions.cpp
 )
 
-target_compile_options(avalanche PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(avalanche PRIVATE -Wall -Wextra -Wpedantic -g)
 
 target_include_directories(avalanche PUBLIC include/)
 target_link_libraries(avalanche -lcrypto)
