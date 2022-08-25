@@ -13,11 +13,11 @@
 
 /* OpenSSL sha256 function */
 template <std::size_t Size>
-std::string sha256(const std::unique_ptr<std::array<uint8_t, Size>>& arr) {
+std::string sha256(const std::unique_ptr<std::array<uint8_t, Size>>& ptr) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, (*arr).data(), Size);
+    SHA256_Update(&sha256, (*ptr).data(), Size);
     SHA256_Final(hash, &sha256);
     std::stringstream ss;
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
@@ -36,13 +36,14 @@ std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> generateData(std::size_
     std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> data(size);
 
     for (auto& ptr : data) {
-        ptr = std::unique_ptr<std::array<uint8_t, Bytes>>(new std::array<uint8_t, Bytes>);
+        ptr = std::move(std::unique_ptr<std::array<uint8_t, Bytes>>(new std::array<uint8_t, Bytes>));
     }
 
     /* all uint8_t arrays must be different from each other by 2 bits and 1 from the parent uint8_t array */
     for (std::size_t i = 0; i < size; i++) {
         const std::size_t byte_index = i / 8;
         const std::size_t bit_index = i % 8;
+
         (*data[i])[byte_index] = (1 << bit_index);
     }
 
@@ -78,9 +79,9 @@ int main() {
 
     /* sum the number of different bits from all hashes */
     int count = 0;
-    for (const auto& arr : data) {
-        printBits(arr);
-        count += countDiffBits(sha256(parent), sha256(arr));
+    for (const auto& ptr : data) {
+        // printBits(arr);
+        count += countDiffBits(sha256(parent), sha256(ptr));
     }
     /* output the average hamming weight, which should be something around 0.5 */
     std::cout << "average hamming weight is: " << count / (float)((hashes_count)*256) << '\n';
