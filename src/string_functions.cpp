@@ -6,29 +6,62 @@ std::string strtb(const std::string_view hex) {
     std::stringstream ss;
     while (hex[i]) {
         switch (hex[i]) {
-            case '0': ss << "0000"; break;
-            case '1': ss << "0001"; break;
-            case '2': ss << "0010"; break;
-            case '3': ss << "0011"; break;
-            case '4': ss << "0100"; break;
-            case '5': ss << "0101"; break;
-            case '6': ss << "0110"; break;
-            case '7': ss << "0111"; break;
-            case '8': ss << "1000"; break;
-            case '9': ss << "1001"; break;
+            case '0':
+                ss << "0000";
+                break;
+            case '1':
+                ss << "0001";
+                break;
+            case '2':
+                ss << "0010";
+                break;
+            case '3':
+                ss << "0011";
+                break;
+            case '4':
+                ss << "0100";
+                break;
+            case '5':
+                ss << "0101";
+                break;
+            case '6':
+                ss << "0110";
+                break;
+            case '7':
+                ss << "0111";
+                break;
+            case '8':
+                ss << "1000";
+                break;
+            case '9':
+                ss << "1001";
+                break;
             case 'A':
-            case 'a': ss << "1010"; break;
+            case 'a':
+                ss << "1010";
+                break;
             case 'B':
-            case 'b': ss << "1011"; break;
+            case 'b':
+                ss << "1011";
+                break;
             case 'C':
-            case 'c': ss << "1100"; break;
+            case 'c':
+                ss << "1100";
+                break;
             case 'D':
-            case 'd': ss << "1101"; break;
+            case 'd':
+                ss << "1101";
+                break;
             case 'E':
-            case 'e': ss << "1110"; break;
+            case 'e':
+                ss << "1110";
+                break;
             case 'F':
-            case 'f': ss << "1111"; break;
-            default: std::cout << "\nlease enter valid hexadecimal digit " << hex[i];
+            case 'f':
+                ss << "1111";
+                break;
+            default:
+                std::cout << "\nplease enter valid hexadecimal digit " << hex[i];
         }
         i++;
     }
