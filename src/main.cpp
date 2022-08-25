@@ -33,10 +33,11 @@ std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> generateData(std::size_
         throw std::invalid_argument("Cannot have a size larger than the number of bits.");
     }
 
-    std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> data(size);
+    std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> data;
+    data.reserve(size);
 
-    for (auto& ptr : data) {
-        ptr = std::move(std::unique_ptr<std::array<uint8_t, Bytes>>(new std::array<uint8_t, Bytes>));
+    for (std::size_t i = 0; i < size; i++) {
+        data.emplace_back(std::make_unique<std::array<uint8_t, Bytes>>());
     }
 
     /* all uint8_t arrays must be different from each other by 2 bits and 1 from the parent uint8_t array */
@@ -72,7 +73,6 @@ int main() {
     /* number of bytes that each hash will be constructed from */
     const std::size_t bytes = 10;
 
-    /* parent uint8_t array to compare our data with */
     std::unique_ptr<std::array<uint8_t, bytes>> parent(new std::array<uint8_t, bytes>());
 
     std::vector<std::unique_ptr<std::array<uint8_t, bytes>>> data(generateData<bytes>(hashes_count));
