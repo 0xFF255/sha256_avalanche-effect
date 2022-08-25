@@ -3,15 +3,15 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
-#include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "string_functions.hpp"
 
 /* OpenSSL sha256 function */
-template<std::size_t Size>
+template <std::size_t Size>
 std::string sha256(const std::array<uint8_t, Size> arr) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
@@ -26,7 +26,7 @@ std::string sha256(const std::array<uint8_t, Size> arr) {
 }
 
 /* generate a vector of arrays of uint8_t's to feed into sha256 */
-template<std::size_t Bytes>
+template <std::size_t Bytes>
 std::unique_ptr<std::vector<std::array<uint8_t, Bytes>>> generateData(std::size_t size) {
     if (size > 8 * Bytes) {
         throw std::invalid_argument("Cannot have a size larger than the number of bits.");
@@ -45,10 +45,10 @@ std::unique_ptr<std::vector<std::array<uint8_t, Bytes>>> generateData(std::size_
 }
 
 /* print the bits of each byte in a uint8_t array */
-template<std::size_t Size>
-void printBits(std::array<uint8_t, Size> arr) {
+template <std::size_t Size>
+void printBits(std::unique_ptr<std::array<uint8_t, Size>>& arr) {
     for (std::size_t i = 0; i < Size; i++) {
-        std::cout << std::bitset<8>{arr[i]};
+        std::cout << std::bitset<8>{(*arr)[i]};
     }
     std::cout << '\n';
 }
@@ -71,13 +71,15 @@ int main() {
 
     std::unique_ptr<std::vector<std::array<uint8_t, bytes>>> data(generateData<bytes>(hashes_count));
 
+    printBits(parent);
+
     /* sum the number of different bits from all hashes */
-    int count = 0;
-    for (std::size_t i = 0; i < hashes_count; i++) {
-        //printBits((*data)[i]);
-        count += countDiffBits(sha256(*parent), sha256((*data)[i]));
-    }
-    /* output the average hamming weight, which should be something around 0.5 */
-    std::cout << "average hamming weight is: " << count / (float)((hashes_count)*256) << '\n';
+    // int count = 0;
+    // for (std::size_t i = 0; i < hashes_count; i++) {
+    //     //printBits((*data)[i]);
+    //     count += countDiffBits(sha256(*parent), sha256((*data)[i]));
+    // }
+    // /* output the average hamming weight, which should be something around 0.5 */
+    // std::cout << "average hamming weight is: " << count / (float)((hashes_count)*256) << '\n';
     return 0;
 }
