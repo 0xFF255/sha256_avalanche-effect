@@ -33,9 +33,11 @@ std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> generateData(std::size_
         throw std::invalid_argument("Cannot have a size larger than the number of bits.");
     }
 
+    /* using unique_ptr<T> to store the arrays to prevent problems with allocating big blocks */
     std::vector<std::unique_ptr<std::array<uint8_t, Bytes>>> data;
     data.reserve(size);
 
+    /* initializing the vector */
     for (std::size_t i = 0; i < size; i++) {
         data.emplace_back(std::make_unique<std::array<uint8_t, Bytes>>());
     }
@@ -69,20 +71,24 @@ int countDiffBits(std::string_view first_string, std::string_view second_string)
 
 int main() {
     /* number of hashes to compare to parent hash */
-    const std::size_t hashes_count = 60;
-    /* number of bytes that each hash will be constructed from */
-    const std::size_t bytes = 10;
+    const std::size_t hashes_count = 100;
 
+    /* number of bytes that each hash will be constructed from */
+    const std::size_t bytes = 64;
+
+    /* using unique_ptr<T> to store the array to prevent problems with allocating big blocks */
     std::unique_ptr<std::array<uint8_t, bytes>> parent(new std::array<uint8_t, bytes>());
 
+    /* initializing the array */
     std::vector<std::unique_ptr<std::array<uint8_t, bytes>>> data(generateData<bytes>(hashes_count));
 
     /* sum the number of different bits from all hashes */
     int count = 0;
     for (const auto& ptr : data) {
-        // printBits(arr);
+        // printBits(ptr);
         count += countDiffBits(sha256(parent), sha256(ptr));
     }
+
     /* output the average hamming weight, which should be something around 0.5 */
     std::cout << "average hamming weight is: " << count / (float)((hashes_count)*256) << '\n';
     return 0;
